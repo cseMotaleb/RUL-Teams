@@ -1,5 +1,4 @@
 === RUL Teams ===
-Donate link: https://csemotaleb.github.io/cv//
 Tags: comments, spam
 Requires at least: 3.0.1
 Tested up to: 3.4
