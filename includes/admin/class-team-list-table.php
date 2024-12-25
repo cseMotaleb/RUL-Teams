@@ -11,8 +11,8 @@ class RUL_Team_List_Table extends WP_List_Table
     public function __construct()
     {
         parent::__construct([
-            'singular' => __('Team Member', 'rul-teams'),
-            'plural'   => __('Team Members', 'rul-teams'),
+            'singular' => esc_html__('Team Member', 'rul-teams'),
+            'plural'   => esc_html__('Team Members', 'rul-teams'),
             'ajax'     => true, // Enable Ajax support
         ]);
     }
@@ -24,10 +24,10 @@ class RUL_Team_List_Table extends WP_List_Table
     {
         return [
             'cb'          => '<input type="checkbox" />',
-            'name'        => __('Name', 'rul-teams'),
-            'designation' => __('Designation', 'rul-teams'),
-            'member_id'   => __('ID', 'rul-teams'),
-            'email'       => __('Email', 'rul-teams'),
+            'name'        => esc_html__('Name', 'rul-teams'),
+            'designation' => esc_html__('Designation', 'rul-teams'),
+            'member_id'   => esc_html__('ID', 'rul-teams'),
+            'email'       => esc_html__('Email', 'rul-teams'),
         ];
     }
 
@@ -47,55 +47,55 @@ class RUL_Team_List_Table extends WP_List_Table
      * Prepare table items
      */
     public function prepare_items()
-{
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'rul_teams';
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'rul_teams';
 
-    // Handle search input
-    $search = (!empty($_REQUEST['s'])) ? esc_sql($_REQUEST['s']) : '';
+        // Handle search input
+        $search = isset($_REQUEST['s']) ? esc_sql($_REQUEST['s']) : '';
 
-    // Handle sorting
-    $orderby = (!empty($_REQUEST['orderby'])) ? esc_sql($_REQUEST['orderby']) : 'name'; // Default to "name"
-    $order = (!empty($_REQUEST['order'])) ? esc_sql($_REQUEST['order']) : 'desc'; // Default to "DESC"
+        // Handle sorting
+        $orderby = isset($_REQUEST['orderby']) ? esc_sql($_REQUEST['orderby']) : 'name'; // Default to "name"
+        $order = isset($_REQUEST['order']) ? esc_sql($_REQUEST['order']) : 'desc'; // Default to "DESC"
 
-    // Handle pagination
-    $per_page = 10;
-    $current_page = $this->get_pagenum();
-    $offset = ($current_page - 1) * $per_page;
+        // Handle pagination
+        $per_page = 10;
+        $current_page = $this->get_pagenum();
+        $offset = ($current_page - 1) * $per_page;
 
-    // Total items count
-    $total_items = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE name LIKE %s",
-            '%' . $search . '%'
-        )
-    );
+        // Total items count
+        $total_items = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_name WHERE name LIKE %s",
+                '%' . $search . '%'
+            )
+        );
 
-    // Fetch data
-    $this->items = $wpdb->get_results(
-        $wpdb->prepare(
-            "SELECT * FROM $table_name WHERE name LIKE %s ORDER BY $orderby $order LIMIT %d OFFSET %d",
-            '%' . $search . '%',
-            $per_page,
-            $offset
-        ),
-        ARRAY_A
-    );
+        // Fetch data
+        $this->items = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name WHERE name LIKE %s ORDER BY $orderby $order LIMIT %d OFFSET %d",
+                '%' . $search . '%',
+                $per_page,
+                $offset
+            ),
+            ARRAY_A
+        );
 
-    // Set pagination arguments
-    $this->set_pagination_args([
-        'total_items' => $total_items,
-        'per_page'    => $per_page,
-        'total_pages' => ceil($total_items / $per_page),
-    ]);
+        // Set pagination arguments
+        $this->set_pagination_args([
+            'total_items' => $total_items,
+            'per_page'    => $per_page,
+            'total_pages' => ceil($total_items / $per_page),
+        ]);
 
-    // Set column headers
-    $this->_column_headers = [
-        $this->get_columns(),
-        [],
-        $this->get_sortable_columns(),
-    ];
-}
+        // Set column headers
+        $this->_column_headers = [
+            $this->get_columns(),
+            [],
+            $this->get_sortable_columns(),
+        ];
+    }
 
     /**
      * Render columns
@@ -106,7 +106,7 @@ class RUL_Team_List_Table extends WP_List_Table
             case 'designation':
             case 'member_id':
             case 'email':
-                return $item[$column_name];
+                return esc_html($item[$column_name] ?? '');
             default:
                 return '';
         }
@@ -122,15 +122,15 @@ class RUL_Team_List_Table extends WP_List_Table
         // Delete action for Ajax delete
         $delete_action = sprintf(
             '<a href="#" class="delete-team-member" data-id="%d">%s</a>',
-            $item['id'],
-            __('Delete', 'rul-teams')
+            intval($item['id']),
+            esc_html__('Delete', 'rul-teams')
         );
 
         // Edit action
         $edit_action = sprintf(
             '<a href="%s">%s</a>',
             esc_url($edit_url),
-            __('Edit', 'rul-teams')
+            esc_html__('Edit', 'rul-teams')
         );
 
         return sprintf(
@@ -146,40 +146,43 @@ class RUL_Team_List_Table extends WP_List_Table
      */
     public function column_cb($item)
     {
-        return sprintf('<input type="checkbox" name="id[]" value="%s" />', $item['id']);
+        return sprintf('<input type="checkbox" name="id[]" value="%d" />', intval($item['id']));
     }
 
     /**
-     * Bulk actions
-     */
-    public function get_bulk_actions()
-    {
-        return [
-            'delete' => __('Delete', 'rul-teams'),
-        ];
-    }
+ * Bulk actions
+ */
+public function get_bulk_actions()
+{
+    return [
+        'delete' => esc_html__('Delete', 'rul-teams'),
+    ];
+}
 
-    /**
-     * Handle bulk actions
-     */
-    public function process_bulk_action(){
-        // Check if the current action is "delete"
-        if ('delete' === $this->current_action() && !empty($_POST['id'])) {
-            global $wpdb;
-            $table_name = $wpdb->prefix . 'rul_teams';
+/**
+ * Handle bulk actions
+ */
+public function process_bulk_action()
+{
+    if ('delete' === $this->current_action() && !empty($_POST['id'])) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'rul_teams';
 
-            // Sanitize and delete each selected ID
-            $ids = array_map('intval', $_POST['id']);
+        // Sanitize and delete each selected ID
+        $ids = array_map('intval', $_POST['id']);
+        if (!empty($ids)) {
             $ids_placeholder = implode(',', array_fill(0, count($ids), '%d'));
 
+            // Use prepared statements to delete
             $query = $wpdb->prepare("DELETE FROM $table_name WHERE id IN ($ids_placeholder)", $ids);
             $wpdb->query($query);
 
             // Redirect with a success message
-            wp_redirect(add_query_arg(['message' => 'bulk_deleted'], $_SERVER['REQUEST_URI']));
+            wp_redirect(add_query_arg(['message' => 'bulk_deleted'], admin_url('admin.php?page=rul-teams')));
             exit;
         }
     }
+}
 
 
     /**
@@ -194,8 +197,8 @@ class RUL_Team_List_Table extends WP_List_Table
         $input_id = $input_id . '-search-input';
         ?>
         <p class="search-box">
-            <label class="screen-reader-text" for="<?php echo $input_id; ?>"><?php echo $text; ?>:</label>
-            <input type="search" id="<?php echo $input_id; ?>" name="s" value="<?php echo esc_attr($_REQUEST['s'] ?? ''); ?>" />
+            <label class="screen-reader-text" for="<?php echo esc_attr($input_id); ?>"><?php echo esc_html($text); ?>:</label>
+            <input type="search" id="<?php echo esc_attr($input_id); ?>" name="s" value="<?php echo esc_attr($_REQUEST['s'] ?? ''); ?>" />
             <?php submit_button($text, 'button', false, false, ['id' => 'search-submit']); ?>
         </p>
         <?php

@@ -11,87 +11,97 @@ jQuery(document).ready(function ($) {
             data: formData + '&action=update_team_member',
             success: function (response) {
                 if (response.success) {
-                    alert(response.data.message || 'Team Member updated successfully!');
-                    window.location.href = 'admin.php?page=rul-teams';
+                    // Redirect to the edit page with a success message
+                    const redirectUrl = new URL(window.location.href);
+                    redirectUrl.searchParams.set('message', 'member_updated');
+                    window.location.href = redirectUrl.toString();
                 } else {
-                    alert(response.data.message || 'Failed to update Team Member.');
+                    // Show error message in the notice area
+                    $('#edit-team-member-form').before(
+                        `<div class="notice notice-error is-dismissible"><p>${response.data.message || 'Failed to update Team Member.'}</p></div>`
+                    );
                 }
             },
             error: function () {
-                alert('An error occurred. Please try again.');
+                $('#edit-team-member-form').before(
+                    `<div class="notice notice-error is-dismissible"><p>An error occurred. Please try again.</p></div>`
+                );
             }
         });
     });
-
-    // Single Delete
+    
+    // Single Delete Action
     $('.delete-team-member').on('click', function (e) {
         e.preventDefault();
 
-        if (!confirm('Are you sure you want to delete this team member?')) {
-            return;
-        }
-
-        const memberId = $(this).data('id');
+        const id = $(this).data('id');
+        if (!confirm('Are you sure you want to delete this team member?')) return;
 
         $.ajax({
             url: rulTeams.ajax_url,
             type: 'POST',
             data: {
                 action: 'delete_team_member',
-                id: memberId,
                 nonce: rulTeams.nonce,
+                id: id,
             },
             success: function (response) {
                 if (response.success) {
-                    alert('Team member deleted successfully.');
+                    alert(response.data.message);
                     location.reload();
                 } else {
-                    alert(response.data.message || 'Failed to delete team member.');
+                    alert(response.data.message);
                 }
             },
             error: function () {
-                alert('An error occurred. Please try again.');
+                alert('An error occurred while processing your request.');
             },
         });
     });
 
-    // Bulk Delete
-    $('#bulk-delete-button').on('click', function (e) {
-        e.preventDefault();
+   // Bulk Delete Action
+// Bulk Delete Action
+$('#doaction').on('click', function (e) {
+    e.preventDefault();
 
-        const selectedIds = [];
-        $('input[name="id[]"]:checked').each(function () {
-            selectedIds.push($(this).val());
-        });
+    const selectedAction = $('#bulk-action-selector-top').val(); // Bulk action selector
+    if (selectedAction !== 'delete') {
+        alert('Please select "Delete" from bulk actions.');
+        return;
+    }
 
-        if (selectedIds.length === 0) {
-            alert('Please select at least one team member.');
-            return;
-        }
-
-        if (!confirm('Are you sure you want to delete the selected team members?')) {
-            return;
-        }
-
-        $.ajax({
-            url: rulTeams.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'bulk_delete_team_members',
-                ids: selectedIds,
-                nonce: rulTeams.nonce,
-            },
-            success: function (response) {
-                if (response.success) {
-                    alert('Selected team members deleted successfully.');
-                    location.reload();
-                } else {
-                    alert(response.data.message || 'Failed to delete team members.');
-                }
-            },
-            error: function () {
-                alert('An error occurred. Please try again.');
-            },
-        });
+    const ids = [];
+    $('input[name="id[]"]:checked').each(function () {
+        ids.push($(this).val());
     });
+
+    if (ids.length === 0) {
+        alert('No team members selected for deletion.');
+        return;
+    }
+
+    if (!confirm('Are you sure you want to delete the selected team members?')) return;
+
+    $.ajax({
+        url: rulTeams.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'bulk_delete_team_members',
+            nonce: rulTeams.nonce,
+            ids: ids,
+        },
+        success: function (response) {
+            if (response.success) {
+                location.reload(); // Reload the page to reflect changes
+            } else {
+                alert(response.data.message || 'Failed to delete selected team members.');
+            }
+        },
+        error: function () {
+            alert('An error occurred while processing your request.');
+        },
+    });
+});
+
+
 });
