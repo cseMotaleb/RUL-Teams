@@ -1,28 +1,28 @@
 <?php
 
-if (!defined('ABSPATH')) exit;
+    if (!defined('ABSPATH')) exit;
 
-global $wpdb;
-$table_name = $wpdb->prefix . 'rul_teams';
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'rul_teams';
 
-// Validate and sanitize the `id` parameter
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    wp_die(esc_html__('Invalid Team Member ID.', 'rul-teams'));
-}
+    // Validate and sanitize the `id` parameter
+    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+        wp_die(esc_html__('Invalid Team Member ID.', 'rul-teams'));
+    }
 
-$id = intval($_GET['id']);
+    $id = intval($_GET['id']);
 
-// Fetch member data safely
-$member = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id), ARRAY_A);
+    // Fetch member data safely
+    $member = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id), ARRAY_A);
 
-// Ensure `$member` fields are not `null`
-$member = array_map(function ($value) {
-    return $value ?? ''; // Default to an empty string if null
-}, (array) $member);
+    // Ensure `$member` fields are not `null`
+    $member = array_map(function ($value) {
+        return $value ?? ''; // Default to an empty string if null
+    }, (array) $member);
 
-if (empty($member)) {
-    wp_die(esc_html__('Team Member not found.', 'rul-teams'));
-}
+    if (empty($member)) {
+        wp_die(esc_html__('Team Member not found.', 'rul-teams'));
+    }
 ?>
 
 <div class="wrap">
