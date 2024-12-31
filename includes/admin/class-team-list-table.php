@@ -5,7 +5,8 @@
     if (!class_exists('WP_List_Table')) {
         require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
     }
-
+    
+    // Extends Wp list table 
     class RUL_Team_List_Table extends WP_List_Table
     {
         public function __construct()
@@ -15,6 +16,14 @@
                 'plural'   => esc_html__('Team Members', 'rul-teams'),
                 'ajax'     => true, // Enable Ajax support
             ]);
+        }
+
+        // Override the single_row method
+        public function single_row($item) {
+            // Add a dynamic ID attribute to the <tr> tag
+            echo '<tr id="team-member-' . esc_attr($item['id']) . '">';
+            $this->single_row_columns($item);
+            echo '</tr>';
         }
 
         // Define table columns

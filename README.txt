@@ -1,6 +1,6 @@
 === RUL Teams ===
 Contributors: Motaleb Hossain
-Tags: team, management, CRUD, bulk delete, ajax, pagination, search
+Tags: Team member, management, CRUD, bulk delete, ajax, pagination, search
 Requires at least: 5.6
 Tested up to: 6.3
 Requires PHP: 7.4
@@ -84,5 +84,4 @@ This plugin is licensed under the GPLv2 or later. See the [GNU General Public Li
 
 == Development ==
 
-This plugin follows WordPress coding standards and object-oriented programming (OOP). Contributions and suggestions are welcome. Visit our GitHub repository for more details: [GitHub Repository](https://github.com/yourusername/rul-teams).
-
+This plugin follows WordPress coding standards and object-oriented programming (OOP). Contributions and suggestions are welcome. Visit our GitHub repository for more details: [GitHub Repository](https://github.com/cseMotaleb/RUL-Teams).

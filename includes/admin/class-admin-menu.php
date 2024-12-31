@@ -7,7 +7,6 @@
         public function __construct()
         {
             add_action('admin_menu', [$this, 'register_menus']);
-            add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
         }
 
         public function register_menus()
@@ -41,28 +40,6 @@
                 'rul-teams-edit', 
                 [$this, 'edit_team_member_page'] 
             );
-        }
-
-        // Enqueue Scripts
-        public function enqueue_assets($hook)
-        {
-            // Ensure $hook is a valid string before using strpos()
-            if (!is_string($hook) || strpos($hook, 'rul-teams') === false) {
-                return;
-            }
-            wp_enqueue_script(
-                'rul-teams-js',
-                RUL_TEAMS_URL . 'assets/js/ajax.js',
-                ['jquery'],
-                RUL_TEAMS_VERSION,
-                true
-            );
-
-            // Localize script with nonce and Ajax URL
-            wp_localize_script('rul-teams-js', 'rulTeams', [
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce'    => wp_create_nonce('rul-teams-nonce'),
-            ]);
         }
 
         // Teams list file path

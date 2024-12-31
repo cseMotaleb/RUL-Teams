@@ -27,7 +27,10 @@ $required_files = [
     'includes/class-activator.php',
     'includes/class-database.php',
     'includes/admin/class-admin-menu.php',
-    'includes/admin/ajax-handlers.php'
+    'includes/admin/ajax-handlers.php',
+    'includes/admin/enqueue-scripts.php',
+    'includes/admin/create-member.php'
+
 ];
 
 // Include required files with error handling
@@ -62,3 +65,7 @@ if (is_admin()) {
 add_action('plugins_loaded', function () {
     load_plugin_textdomain('rul-teams', false, basename(dirname(__FILE__)) . '/languages');
 });
+
+
+
+
