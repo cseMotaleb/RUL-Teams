@@ -1,10 +1,10 @@
 <?php
-if (!defined('ABSPATH')) exit;
+    if (!defined('ABSPATH')) exit;
 
-require_once RUL_TEAMS_PATH . 'includes/admin/class-team-list-table.php';
+    require_once RUL_TEAMS_PATH . 'includes/admin/class-team-list-table.php';
 
-$list_table = new RUL_Team_List_Table();
-$list_table->prepare_items();
+    $list_table = new RUL_Team_List_Table();
+    $list_table->prepare_items();
 ?>
 
 <div class="wrap">
